@@ -48,15 +48,6 @@ It allows users to explore events, register seamlessly, and helps organizers man
 ![Uploading Screenshot 2025-12-12 235655.png…]()
 
 
-### 🏠 Home Page
-![Home](images/home.png)
-
-### 🎫 Event Cards
-![Events](images/events.png)
-
-### 📝 Registration Form
-![Register](images/register.png)
-
 ---
 
 ## 📂 Project Structure
