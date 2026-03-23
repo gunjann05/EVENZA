@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width,initial-scale=1" />
+ <title>Smart College Event Management</title>
+
+ <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="style.css" />
+
+ <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+
+ <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+</head>
+<body>
+
+ <section class="hero">
+ <h1>Welcome to Smart College Event Management System Powered by <span class="highlight">EVENZA</span></h1>
+ <p class="tagline">Where Innovation Meets Celebration!</p>
+ <p class="tagline">Organize, Register, and Explore Events Effortlessly ✨</p>
+ <button class="hero-btn admin-hero-btn" id="adminHeroBtn">⚙ Admin</button>
+ </section>
+
+ <div class="top-row">
+ <div class="filter-row">
+    <div class="filters"></div>
+ <button class="filter-btn active" data-category="all">All</button>
+ <button class="filter-btn" data-category="tech">Tech</button>
+ <button class="filter-btn" data-category="culture">Culture</button>
+ <button class="filter-btn" data-category="sports">Sports</button>
+ <button class="filter-btn" data-category="arts">Arts</button>
+ </div>
+ <button id="adminGear" title="Admin" style="display:none">⚙ Admin</button>
+ </div>
+
+ <section class="event-container">
+ <div id="loadingIndicator" style="text-align: center; width: 100%;">
+ <h3>Loading Events... Please Wait.</h3>
+ </div>
+ </section>
+
+ <div id="registerModal" class="modal">
+ <div class="modal-content">
+ <span class="close-btn">&times;</span>
+ <h2 id="registerModalTitle">Register for Event</h2>
+ <form id="registrationForm">
+ <label for="userName" class="sr-only">Your Name</label>
+ <input type="text" id="userName" placeholder="Enter your name" required />
+ 
+ <label for="userEmail" class="sr-only">Your Email</label>
+ <input type="email" id="userEmail" placeholder="Enter your email" required />
+ 
+ <button type="submit" id="submitRegistration">Submit</button>
+ </form>
+ </div>
+ </div>
+
+ <div id="feedbackModal" class="modal">
+ <div class="modal-content">
+ <span class="close-btn" data-modal="feedbackModal">&times;</span>
+ <h2>Tell Us What You Think</h2>
+ <form id="feedbackForm">
+ 
+ <p style="margin: 15px 0 10px; font-weight: 600;">Overall Event Experience:</p>
+ <div id="star-rating" style="display: flex; justify-content: center; font-size: 24px; color: #ffd60a; margin-bottom: 20px;">
+ <span class="star" data-rating="5">&#9733;</span>
+ <span class="star" data-rating="4">&#9733;</span>
+ <span class="star" data-rating="3">&#9733;</span>
+ <span class="star" data-rating="2">&#9733;</span>
+ <span class="star" data-rating="1">&#9733;</span>
+ </div>
+ <input type="hidden" id="feedbackRating" value="5" required>
+ <input type="hidden" id="feedbackEventId" value="">
+ <input type="hidden" id="feedbackEventTitle" value="">
+
+
+ <input type="text" id="feedbackName" placeholder="Your Name (Optional)">
+ <input type="email" id="feedbackEmail" placeholder="Your Email (Optional)">
+ <textarea id="feedbackComments" placeholder="Your comments or suggestions..." rows="4" required></textarea>
+
+ <button type="submit" id="submitFeedbackBtn">Submit Feedback</button>
+ </form>
+ </div>
+</div>
+
+ <div id="chat-icon" onclick="toggleChat()">💬</div>
+ <div id="chat-window">
+ <div id="chat-header">Need Help?<span id="close-chat" onclick="toggleChat()">×</span></div>
+ <div id="chat-body"><div class="bot-message">Hi! How can I help you with events today?</div></div>
+ <div id="chat-input-area"><input id="user-input" placeholder="Type your question..." /><button onclick="sendMessage()">Send</button></div>
+ <div id="chat-suggestions"><button onclick="suggestQuestion('How do I register?')">How do I register?</button><button onclick="suggestQuestion('What events are today?')">What events are today?</button></div>
+ </div>
+
+ <aside id="adminSidebar" class="admin-sidebar" aria-hidden="true">
+ <div class="admin-sidebar-header">
+ <h3>Admin Panel</h3>
+ <button id="closeAdmin" title="Close" aria-label="Close Admin Sidebar">✖</button>
+ </div>
+
+ <div class="admin-content">
+ <h4>Add New Event</h4>
+ <input id="adminEventTitle" placeholder="Event Title" />
+ <input id="adminEventDate" type="date" />
+ <input id="adminEventLocation" placeholder="Location" />
+ <select id="adminEventCategory">
+ <option value="tech">Tech</option>
+ <option value="culture">Culture</option>
+ <option value="sports">Sports</option>
+ <option value="arts">Arts</option>
+ </select>
+ <button id="addEventBtn">Add Event</button>
+
+ <h4 style="margin-top:14px">Existing Events</h4>
+ <div class="admin-events-table-wrap">
+ <table class="admin-events-table">
+ <thead><tr><th>Title</th><th>Date</th><th>Category</th><th>Actions</th></tr></thead>
+ <tbody id="adminEventsTable"></tbody>
+ </table>
+ </div>
+
+ <div style="margin-top:14px">
+ <button id="adminLogoutBtn" style="display:none;background:#ef4444;color:#fff">Logout</button>
+ <button id="viewAnalyticsBtn" class="btn btn-primary" style="width: 100%; margin-top: 10px;">View Analytics</button>
+ </div>
+ </div>
+ </aside>
+
+ <div id="adminLoginModal" class="modal">
+ <div class="modal-content">
+ <span class="close-btn" id="closeLogin">&times;</span>
+ <h2>Admin Login</h2>
+
+ <label for="adminID" class="sr-only">Admin ID</label>
+ <input type="text" id="adminID" placeholder="Enter Admin ID">
+ 
+ <label for="adminPass" class="sr-only">Password</label>
+ <input type="password" id="adminPass" placeholder="Enter Password">
+
+ <button id="adminLoginBtn">Login</button>
+ </div>
+ </div>
+
+ <div id="editEventModal" class="modal">
+ <div class="modal-content">
+ <span class="close-btn" id="closeEdit">&times;</span>
+ <h2>Edit Event</h2>
+ <input type="text" id="editEventTitle" placeholder="Event Title" required />
+ <input type="date" id="editEventDate" required />
+ <input type="text" id="editEventLocation" placeholder="Location" required />
+ <select id="editEventCategory">
+ <option value="tech">Tech</option>
+ <option value="culture">Culture</option>
+ <option value="sports">Sports</option>
+ <option value="arts">Arts</option>
+ </select>
+ <button id="saveEditBtn">Save Changes</button>
+ </div>
+ </div>
+
+ <section id="adminDashboard" class="admin-dashboard hidden" aria-hidden="true">
+ <div class="dash-topbar">
+ <div class="dash-brand">
+ <div class="dash-logo">EVENZA</div>
+ <div class="dash-sub">Admin Analytics</div>
+ </div>
+ <div class="dash-actions">
+ <button id="dashRefreshBtn" class="btn btn-primary">Refresh</button>
+ <button id="dashBackBtn" class="btn btn-primary">Back to Events</button>
+ </div>
+ </div>
+
+ <div class="dash-grid">
+ <div class="dash-card">
+ <div class="dash-kpi">Total Events</div>
+ <div class="dash-val" id="kpiTotalEvents">—</div>
+ <div class="dash-mini">All events stored in Firestore</div>
+ </div>
+ <div class="dash-card">
+ <div class="dash-kpi">Upcoming Events</div>
+ <div class="dash-val" id="kpiUpcomingEvents">—</div>
+ <div class="dash-mini">Date ≥ today (local)</div>
+ </div>
+ <div class="dash-card">
+ <div class="dash-kpi">Registrations</div>
+ <div class="dash-val" id="kpiRegistrations">—</div>
+ <div class="dash-mini">Total registrations received</div>
+ </div>
+ <div class="dash-card">
+ <div class="dash-kpi">Top Category</div>
+ <div class="dash-val" id="kpiTopCategory">—</div>
+ <div class="dash-mini">Highest event count</div>
+ </div>
+ </div>
+
+ <div class="dash-charts">
+ <div class="chart-card">
+ <div class="chart-title">Events by Category (Pie)</div>
+ <canvas id="pieCategory" width="420" height="260"></canvas>
+ </div>
+ <div class="chart-card">
+ <div class="chart-title">Events by Month (Bar)</div>
+ <canvas id="barMonth" width="420" height="260"></canvas>
+ </div>
+ </div>
+ </section>
+
+ <script type="module" src="script.js"></script> 
+</body>
+</html>
