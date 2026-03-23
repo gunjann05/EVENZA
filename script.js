@@ -12,7 +12,7 @@ import {
 
 // ====================== FIREBASE CONFIG ======================
 const firebaseConfig = {
-    apiKey: "AIzaSyD8c7uczE4m8pxn6z5pll29DSXOTIA4Q8k",
+    apiKey: "AIzaSyDJWLjDcCinG5rxb-eQt9xNPu-_6M7pdIc",
     authDomain: "smartcollegeevents.firebaseapp.com",
     projectId: "smartcollegeevents",
     storageBucket: "smartcollegeevents.firebasestorage.app",
